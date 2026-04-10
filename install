@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ "$(id -u)" = "0" ]
+then
+    fichier_pro="a2riView.pro"
+    
+    QMAKE=qmake
+    if type -p qmake-qt4; then
+	QMAKE=qmake-qt4
+    fi
+    
+    $QMAKE $fichier_pro
+    $QMAKE
+    make
+    
+    make install
+    ln -s /usr/local/bin/A2RIVIEW/a2riView /usr/local/bin/a2riView
+    make distclean
+else
+    echo "Veuillez passer en mode super utilisateur !"
+fi

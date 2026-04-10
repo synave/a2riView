@@ -1,0 +1,19 @@
+#!/bin/bash
+
+fichier_pro="a2riView.pro"
+
+QMAKE=qmake
+if type -p qmake-qt4; then
+  QMAKE=qmake-qt4
+fi
+
+$QMAKE $fichier_pro
+$QMAKE
+
+if [ "$(id -u)" != "0" ]; then
+    make distclean
+else
+    make uninstall
+    rm -rf /usr/local/bin/a2riView
+    make distclean
+fi
