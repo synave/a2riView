@@ -1,54 +1,103 @@
-Configuration minimale requise :
-- Bibliothèque a2ri (version 0.2 minimum) installée : voir le site: http://liba2ri.free.fr/?page_id=59
-- Bibliothèque QT (version 4.5 minimum) installée
-- Bibliothèque GSL, GLUT et GLEW.
+# a2riView
 
-Ensuite faire :
-./install
+## Configuration minimale requise
 
-Si vous lancez cette commande sans les droits de super utilisateur, le logiciel sera compilé mais pas installé.
+- BibliothÃ¨que a2ri (version 0.2 minimum) installÃ©e : voir le site [liba2ri](http://liba2ri.free.fr/?page_id=59)
+- BibliothÃ¨que QT (version 6 minimum) installÃ©e
+- BibliothÃ¨que GSL, GLUT et GLEW.
 
+### Installation sous Debian/Ubuntu
 
------------------------------------------------------------------
+```sh
+# Install dependencies
+sudo apt-get install build-essential libgsl0-dev freeglut3-dev libglew-dev freeglut3-dev qt6-base-dev && \
+# Download a2ri
+curl -L http://liba2ri.free.fr/?file=a2ri-0.2.zip -o a2ri-0.2.zip && \
+# Unzip a2ri
+unzip a2ri-0.2.zip -d /tmp/a2ri && \
+# Move a2ri to the current directory
+mv /tmp/a2ri/a2ri-0.2 ./a2ri && \
+# Install a2ri
+cd a2ri && \
+chmod +x install.sh && \
+sudo ./install.sh && \
+# Install a2riView
+cd .. && \
+chmod +x install && \
+sudo ./install
+```
 
+### Installation sous Fedora
 
-Fonctionnalité de a2riView:
+```sh
+# Install dependencies
+sudo dnf install @development-tools gsl-devel freeglut-devel glew-devel qt6-qtbase-devel && \
+# Download a2ri
+curl -L http://liba2ri.free.fr/?file=a2ri-0.2.zip -o a2ri-0.2.zip && \
+# Unzip a2ri
+unzip a2ri-0.2.zip -d /tmp/a2ri && \
+# Move a2ri to the current directory
+mv /tmp/a2ri/a2ri-0.2 ./a2ri && \
+# Install a2ri
+cd a2ri && \
+chmod +x install.sh && \
+sudo ./install.sh && \
+# Install a2riView
+cd .. && \
+chmod +x install && \
+sudo ./install
+```
 
-Lecture Ecriture:
-Ouverture d'un fichier: Ctrl+O, File -> Open ou en ligne de commande: ./PFE <nom_modèle>;
-Les formats de modèles 3D pris en compte à l'heure actuel sont: off, obj, gts, stl, pgn, wrl, ply, vef.
-Sauvegarde du modèle: Ctrl+S ou File -> Save;
-Fermer le modèle: Ctrl+C ou File -> Close;
-Quitter a2riView: Ctrl+Q ou Alt+F4 ou File -> Quit;
-Conversion d'un modèle en un autre modèle de type différent: ./PFE <modèle_base> <modèle_converti>
+Si vous rencontrez l'erreur suivante lors de l'installation de a2ri:
 
-Affichage:
-Plein écran: F11 ou Display -> Full Screen;
-Modèle Face pleine: F ou Display -> Fill;
-Modèle fil de fer: V ou Display -> Line;
-Modèle point: P ou Display -> Point;
-Normale des Faces: N ou Display -> Normal face;
-Back Face: B ou Display -> Back Face;
-Lumière: L ou Display -> Light;
-Informations sur le modèle: I ou Display -> Informations;
+```sh
+a2riView: error while loading shared libraries: liba2ri.so: cannot open shared object file: No such file or directory
+```
 
-Autre:
-Capture d'écran: F2 ou Utils -> ScreenShot;
-Modification de la taille des points, lignes, normales: Utils -> XX Size; //où XX est Point, Line ou Normal line.
-Modification de la couleur des points, lignes, normales, de l'arrière plan, du modèle: Utils -> XX Size; //où XX est Point, Line, Normal line, Background ou Object.
+Vous pouvez rÃ©soudre ce problÃ¨me en ajoutant le chemin du dossier `lib` de a2ri dans la variable d'environnement `LD_LIBRARY_PATH`:
 
-Déplacement du modèle:
-Clic gauche + déplacement souris: rotation X et Y du modèle
-Clic gauche + Shift + déplacement souris: rotation Z du modèle
-Molette: Zoom du modèle
-Clic droit + déplacement souris: translation X et Y du modèle
-Flèche (Haut, Bas, Droite, Gauche): translation du modèle
-R ou Espace: réinitialisation de la caméra
+```sh
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/ && \
+a2riView
+```
 
-Exemples d'utilisation:
-Lancer simplement a2riView
-./a2riView
-Ouvrir un modèle en lançant a2riView
-./a2riView <modèle>
-Convertir un modèle dans un autre format de fichier sans lancer la fenêtre a2riView
-./a2riView <modèle_a_convertir> <modèle_de_sortie>
+## FonctionnalitÃ©s de a2riView
+
+### Lecture Ecriture
+
+- Ouverture d'un fichier: Ctrl+O, File -> Open ou en ligne de commande: `./PFE <nom_modÃ¨le>`;
+- Les formats de modÃ¨les 3D pris en compte Ã  l'heure actuelle sont: off, obj, gts, stl, pgn, wrl, ply, vef.
+- Sauvegarde du modÃ¨le: Ctrl+S ou File -> Save;
+- Fermer le modÃ¨le: Ctrl+C ou File -> Close;
+- Quitter a2riView: Ctrl+Q ou Alt+F4 ou File -> Quit;
+- Conversion d'un modÃ¨le en un autre modÃ¨le de type diffÃ©rent: `./PFE <modÃ¨le_base> <modÃ¨le_converti>`
+
+### Affichage
+
+- Plein Ã©cran: F11 ou Display -> Full Screen;
+- ModÃ¨le Face pleine: F ou Display -> Fill;
+- ModÃ¨le fil de fer: V ou Display -> Line;
+- ModÃ¨le point: P ou Display -> Point;
+- Normale des Faces: N ou Display -> Normal face;
+- Back Face: B ou Display -> Back Face;
+- LumiÃ¨re: L ou Display -> Light;
+- Informations sur le modÃ¨le: I ou Display -> Informations;
+
+### Autre
+
+- Capture d'Ã©cran: F2 ou Utils -> ScreenShot;
+- Modification de la taille des points, lignes, normales: Utils -> XX Size; //oÃ¹ XX est Point, Line ou Normal line.
+- Modification de la couleur des points, lignes, normales, de l'arriÃ¨re-plan, du modÃ¨le: Utils -> XX Size; //oÃ¹ XX est Point, Line, Normal line, Background ou Object.
+
+### DÃ©placement du modÃ¨le
+
+- Clic gauche + dÃ©placement souris: rotation X et Y du modÃ¨le
+- Clic gauche + Shift + dÃ©placement souris: rotation Z du modÃ¨le
+- Molette: Zoom du modÃ¨le
+- Clic droit + dÃ©placement souris: translation X et Y du modÃ¨le
+- FlÃ¨che (Haut, Bas, Droite, Gauche): translation du modÃ¨le
+- R ou Espace: rÃ©initialisation de la camÃ©ra
+
+### Exemples d'utilisation
+
+- Lancer simplement a2riView

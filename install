@@ -1,21 +1,43 @@
 #!/bin/bash
 
-if [ "$(id -u)" = "0" ]
-then
-    fichier_pro="a2riView.pro"
-    
-    QMAKE=qmake
-    if type -p qmake-qt4; then
-	QMAKE=qmake-qt4
-    fi
-    
-    $QMAKE $fichier_pro
-    $QMAKE
-    make
-    
-    make install
-    ln -s /usr/local/bin/A2RIVIEW/a2riView /usr/local/bin/a2riView
-    make distclean
-else
-    echo "Veuillez passer en mode super utilisateur !"
+# Check for root
+if [ "$(id -u)" != "0" ]; then
+    echo "Please run this script as root!"
+    exit 1
 fi
+
+# Define variables
+fichier_pro="a2riView.pro"
+install_dir="/usr/local/bin/A2RIVIEW"
+binary_name="a2riView"
+export install_dir binary_name
+
+# Remove previous installation
+chmod +x ./uninstall
+./uninstall
+
+# Check if qmake is installed
+QMAKE=$(command -v qmake6 || command -v qmake)
+if [ -z "$QMAKE" ]; then
+    echo "qmake not found. Please install Qt6 development tools."
+    exit 2
+fi
+
+# Build the project in debug mode
+$QMAKE $fichier_pro CONFIG+=debug
+
+if ! make; then
+    echo "Error: Compilation failed."
+    echo "Ensure you have the required dependencies installed."
+    echo "For more information, see the README file."
+    make distclean
+    exit 3
+fi
+
+# Install the binary
+make install
+ln -s "$install_dir/$binary_name" "/usr/local/bin/$binary_name"
+
+make distclean
+
+echo "Installation completed successfully!"

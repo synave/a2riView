@@ -19,31 +19,29 @@
 #include <QMenuBar>
 #include <QtGui>
 #include <QMenu>
+#include <QMainWindow>
 #include "glwidget.hpp"
 
 class Menu : public QMenuBar
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-  Menu(QMainWindow *parent=0);
-  void addActionToFile(QAction*);
-  void addActionToDisplay(QAction*);
-  void addActionToUtils(QAction*);
-  void addQMenuToDisplay(QMenu*);
+  Menu(QMainWindow *parent = 0);
+  void addActionToFile(QAction *);
+  void addActionToDisplay(QAction *);
+  void addActionToUtils(QAction *);
+  void addQMenuToDisplay(QMenu *);
   void addSeparatorToDisplay();
   void addSeparatorToFile();
   void addSeparatorToUtils();
 
-
 public slots:
-
 
 private:
   QMainWindow *_parent;
   QMenu *file;
   QMenu *display;
   QMenu *utils;
-
 };
 #endif // MENU_HPP

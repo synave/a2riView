@@ -25,36 +25,35 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  if(argc<2)
-    {
-      QApplication app(argc, argv);
-      MainWindow window;
-      window.show();
-      return app.exec();
-    }
-  if(argc==2)
-    {
-      QString filename(argv[1]);
-      QApplication app(argc, argv);
-      MainWindow window;
+  if (argc < 2)
+  {
+    QApplication app(argc, argv);
+    MainWindow window;
+    window.show();
+    return app.exec();
+  }
+  if (argc == 2)
+  {
+    QString filename(argv[1]);
+    QApplication app(argc, argv);
+    MainWindow window;
 
-      window.openFile(filename);
-      
-      window.show();
+    window.openFile(filename);
 
-      return app.exec();
-    }
-  if(argc==4 && !strcmp(argv[1],"-convert"))
-    {
-      vf_model m;
-      a2ri_vf_init(&m);
-      a2ri_vf_open_file(argv[2], &m);
-      a2ri_vf_save_file(argv[3], &m);
-      return EXIT_SUCCESS;
-    }
+    window.show();
+
+    return app.exec();
+  }
+  if (argc == 4 && !strcmp(argv[1], "-convert"))
+  {
+    vf_model m;
+    a2ri_vf_init(&m);
+    a2ri_vf_open_file(argv[2], &m);
+    a2ri_vf_save_file(argv[3], &m);
+    return EXIT_SUCCESS;
+  }
   cout << "usage : " << argv[0] << " <modele>" << endl;
   cout << "ou" << endl;
   cout << argv[0] << " -convert <modele> <fichier sortie>" << endl;
   return EXIT_FAILURE;
 }
-

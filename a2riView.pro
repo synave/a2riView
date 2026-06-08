@@ -8,7 +8,7 @@ DEPENDPATH += . src include/UI src/UI
 INCLUDEPATH += . include/UI
 LIBS += -lgsl -lgslcblas -la2ri -lGLEW
 
-QT += opengl
+QT += gui core widgets openglwidgets opengl
 
 # Input
 HEADERS += include/UI/glwidget.hpp include/UI/mainwindow.hpp include/UI/menu.hpp
@@ -21,3 +21,5 @@ target.path    = /usr/local/bin/A2RIVIEW
 
 INSTALLS       = target
 
+# Debug
+QMAKE_CXXFLAGS_DEBUG += -g

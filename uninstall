@@ -1,19 +1,37 @@
 #!/bin/bash
 
-fichier_pro="a2riView.pro"
-
-QMAKE=qmake
-if type -p qmake-qt4; then
-  QMAKE=qmake-qt4
+# Check for root
+if [ "$(id -u)" != "0" ]; then
+  echo "Please run this script as root!"
+  exit 1
 fi
 
-$QMAKE $fichier_pro
-$QMAKE
+# Define variables
+install_dir="${install_dir:-/usr/local/bin/A2RIVIEWs}"
+binary_name="${binary_name:-a2riView}"
 
-if [ "$(id -u)" != "0" ]; then
-    make distclean
+if [ ! -d "$install_dir" ]; then
+  echo "$binary_name is not installed, nothing to remove."
+  exit 0
+fi
+
+# Confirm uninstallation
+echo "Do you want to uninstall $binary_name and remove the installation directory $install_dir? [y/N]"
+read -r response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+  # Remove symlink
+  rm -f "/usr/local/bin/$binary_name"
+
+  # Remove installation directory
+  if [ -d "$install_dir" ]; then
+    rm -rf "$install_dir"
+    echo "$binary_name and $install_dir removed."
+  else
+    echo "The installation directory $install_dir does not exist."
+  fi
+
+  echo "Uninstallation completed successfully!"
 else
-    make uninstall
-    rm -rf /usr/local/bin/a2riView
-    make distclean
+  echo "Uninstallation aborted."
+  exit 0
 fi

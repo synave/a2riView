@@ -14,6 +14,15 @@
 /*************************************************************************/
 
 #include "mainwindow.hpp"
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QColorDialog>
+#include <QMessageBox>
+#include <QMdiArea>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLabel>
+
 using namespace std;
 
 bool fs = false;
@@ -24,22 +33,22 @@ bool bfill = true;
 bool bline = false;
 bool bpoint = false;
 
-MainWindow::MainWindow(QMainWindow *parent):QMainWindow(parent), glWidget(new GLWidget())
+MainWindow::MainWindow(QMainWindow *parent) : QMainWindow(parent), glWidget(new GLWidget())
 {
   menu = new Menu(this);
   setMenuBar(menu);
   setCentralWidget(glWidget);
 
-  openAction = new QAction("Open",this);
+  openAction = new QAction("Open", this);
   openAction->setShortcut(tr("Ctrl+O"));
   connect(openAction, SIGNAL(triggered()), this, SLOT(openDialBox()));
-  saveAction = new QAction("Save",this);
+  saveAction = new QAction("Save", this);
   saveAction->setShortcut(tr("Ctrl+S"));
   connect(saveAction, SIGNAL(triggered()), this, SLOT(saveDialBox()));
-  closeAction = new QAction("Close",this);
+  closeAction = new QAction("Close", this);
   closeAction->setShortcut(tr("Ctrl+C"));
   connect(closeAction, SIGNAL(triggered()), this, SLOT(closeModel()));
-  quitAction = new QAction("Quit",this);
+  quitAction = new QAction("Quit", this);
   quitAction->setShortcut(tr("Ctrl+Q"));
   connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
   dispFill = new QAction("Fill", this);
@@ -54,7 +63,7 @@ MainWindow::MainWindow(QMainWindow *parent):QMainWindow(parent), glWidget(new GL
   screenAction = new QAction("Screenshot", this);
   screenAction->setShortcut(tr("F2"));
   connect(screenAction, SIGNAL(triggered()), this, SLOT(infosScreenshot()));
-  connect(this, SIGNAL(executeScreenshot(const QString&, int)), glWidget, SLOT(saveScreenshot(const QString&, int)));
+  connect(this, SIGNAL(executeScreenshot(const QString &, int)), glWidget, SLOT(saveScreenshot(const QString &, int)));
   FullScreenAction = new QAction("Full Screen", this);
   FullScreenAction->setShortcut(tr("F11"));
   connect(FullScreenAction, SIGNAL(triggered()), this, SLOT(FullScreen()));
@@ -110,7 +119,7 @@ MainWindow::MainWindow(QMainWindow *parent):QMainWindow(parent), glWidget(new GL
   menu->addActionToDisplay(normFaceAction);
   menu->addActionToDisplay(backFaceAction);
   menu->addActionToDisplay(lightAction);
-  subTriangleOrientation=new QMenu("Triangle Orientation");
+  subTriangleOrientation = new QMenu("Triangle Orientation");
   menu->addQMenuToDisplay(subTriangleOrientation);
   subTriangleOrientation->addAction(triOrientCCWAction);
   subTriangleOrientation->addAction(triOrientCWAction);
@@ -173,20 +182,20 @@ MainWindow::~MainWindow()
 }
 
 /* Ouverture d'un modèle */
-int MainWindow::openFile(const QString& filename)
+int MainWindow::openFile(const QString &filename)
 {
   int ret = 0;
-  
-  if(!filename.isEmpty())
-    {
-      glWidget->updateGL();
-      ret = glWidget->openModel(filename);
-      
-      if(!ret)
-  	cerr << "Open Error" << endl;
-      glWidget->updateGL();
-    }
-  
+
+  if (!filename.isEmpty())
+  {
+    glWidget->update();
+    ret = glWidget->openModel(filename);
+
+    if (!ret)
+      cerr << "Open Error" << endl;
+    glWidget->update();
+  }
+
   return ret;
 }
 
@@ -194,11 +203,10 @@ int MainWindow::openFile(const QString& filename)
 void MainWindow::openDialBox()
 {
   static QString previous_dir = ".";
-  
+
   QString filename = QFileDialog::getOpenFileName(this, tr("Open Model"), previous_dir, tr("Models (*.off *.obj *.gts *.stl *.pgn *.wrl *.ply *.vef)"));
-  
+
   openFile(filename);
-  
 }
 
 /* Sauvegarde du modèle */
@@ -206,11 +214,11 @@ void MainWindow::saveDialBox()
 {
   QString filter;
   QString str = QFileDialog::getSaveFileName(
-					     this,
-					     "Save",
-					     "",
-					     tr("Models (*.off *.obj *.gts *.stl *.pgn *.wrl *.ply *.vef)"), &filter);
-  if(!str.isEmpty())
+      this,
+      "Save",
+      "",
+      tr("Models (*.off *.obj *.gts *.stl *.pgn *.wrl *.ply *.vef)"), &filter);
+  if (!str.isEmpty())
     glWidget->saveModel(str);
 }
 
@@ -218,7 +226,7 @@ void MainWindow::saveDialBox()
 void MainWindow::closeModel()
 {
   glWidget->closeModel();
-  glWidget->updateGL();
+  glWidget->update();
 }
 
 /* Sauvegarde d'une capture d'écran */
@@ -238,80 +246,82 @@ void MainWindow::closeModel()
 
 void MainWindow::infosScreenshot()
 {
+  screenshotFileName = QFileDialog::getSaveFileName(this, "Enregistrer le screenshot sous", QString(), "png");
 
-  screenshotFileName = QFileDialog::getSaveFileName(this, "Enregistrer le screenshot sous",QString(),"png");
-
-  if(!screenshotFileName.isEmpty()){
-    QMdiArea *window = new QMdiArea(this);
-    window->setWindowTitle("Screenshot");
-    window->move(50,150);
-    QLabel *mul_res=new QLabel("Multiplication de la resolution par :",window);
-    coeff_res=new QSpinBox(window);
+  if (!screenshotFileName.isEmpty())
+  {
+    QMdiArea *screenshotWindow = new QMdiArea(this);
+    screenshotWindow->setWindowTitle("Screenshot");
+    screenshotWindow->move(50, 150);
+    QLabel *mul_res = new QLabel("Multiplication de la resolution par :", screenshotWindow);
+    coeff_res = new QSpinBox(screenshotWindow);
     coeff_res->setMinimum(1);
     coeff_res->setMaximum(9);
-    QPushButton *ok = new QPushButton(QString("OK"),window);
-    QPushButton *annuler = new QPushButton(QString("Annuler"),window);
+    QPushButton *ok = new QPushButton(QString("OK"), screenshotWindow);
+    QPushButton *annuler = new QPushButton(QString("Annuler"), screenshotWindow);
     QHBoxLayout *window_layout = new QHBoxLayout;
     window_layout->addWidget(mul_res);
     window_layout->addWidget(coeff_res);
     window_layout->addWidget(ok);
     window_layout->addWidget(annuler);
-    window->setLayout(window_layout);
-    window->setAttribute(Qt::WA_DeleteOnClose);
-    window->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
-    
-    connect(ok, SIGNAL(clicked()), window, SLOT(close()));
+    screenshotWindow->setLayout(window_layout);
+    screenshotWindow->setAttribute(Qt::WA_DeleteOnClose);
+    screenshotWindow->setWindowFlags(Qt::Dialog | Qt::WindowStaysOnTopHint);
+
+    connect(ok, SIGNAL(clicked()), screenshotWindow, SLOT(close()));
     connect(ok, SIGNAL(clicked()), this, SLOT(doScreenshot()));
-    connect(annuler, SIGNAL(clicked()), window, SLOT(close()));
-    window->resize(300,50);
-    window->show();
+    connect(annuler, SIGNAL(clicked()), screenshotWindow, SLOT(close()));
+    screenshotWindow->resize(300, 50);
+    screenshotWindow->show();
     coeff_res->setFocus(Qt::OtherFocusReason);
   }
 }
 
 void MainWindow::doScreenshot()
 {
-  emit executeScreenshot(screenshotFileName,coeff_res->value());
+  emit executeScreenshot(screenshotFileName, coeff_res->value());
 }
 
 /* Mode plein écran */
-void
-MainWindow::FullScreen(){
-  if(!fs){
+void MainWindow::FullScreen()
+{
+  if (!fs)
+  {
     setWindowState(windowState() | Qt::WindowFullScreen);
-    fs=true;
+    fs = true;
   }
-  else{
-    setWindowState(windowState() &  ~Qt::WindowFullScreen);
-    fs=false;
+  else
+  {
+    setWindowState(windowState() & ~Qt::WindowFullScreen);
+    fs = false;
   }
 }
 
 /* Affichage des faces */
 void MainWindow::displayFill()
 {
-    dispFill->setChecked(!bfill);
-    bfill = !bfill;
-    glWidget->displayFill();
-  glWidget->updateGL();
+  dispFill->setChecked(!bfill);
+  bfill = !bfill;
+  glWidget->displayFill();
+  glWidget->update();
 }
 
 /* Affichage des lignes */
 void MainWindow::displayLine()
 {
-    dispLine->setChecked(!bline);
-    bline = !bline;
-    glWidget->displayLine();
-  glWidget->updateGL();
+  dispLine->setChecked(!bline);
+  bline = !bline;
+  glWidget->displayLine();
+  glWidget->update();
 }
 
 /* Affichage des points */
 void MainWindow::displayPoint()
 {
-    dispPoint->setChecked(!bpoint);
-    bpoint = !bpoint;
-    glWidget->displayPoint();
-  glWidget->updateGL();
+  dispPoint->setChecked(!bpoint);
+  bpoint = !bpoint;
+  glWidget->displayPoint();
+  glWidget->update();
 }
 
 /* Affichage des normales aux faces */
@@ -320,16 +330,16 @@ void MainWindow::normFace()
   normFaceAction->setChecked(!bNormFace);
   bNormFace = !bNormFace;
   glWidget->setDisplayFaceNormal(bNormFace);
-  glWidget->updateGL();
+  glWidget->update();
 }
 
 /* Affichage des faces arrières */
 void MainWindow::backFace()
 {
-    backFaceAction->setChecked(!bcface);
-    bcface = !bcface;
-    glWidget->cullFace();
-    glWidget->updateGL();
+  backFaceAction->setChecked(!bcface);
+  bcface = !bcface;
+  glWidget->cullFace();
+  glWidget->update();
 }
 
 /* Affichage de la lumière */
@@ -339,56 +349,56 @@ void MainWindow::light()
   lightAction->setChecked(!blight);
   blight = !blight;
   glWidget->glLight();
-  glWidget->updateGL();
+  glWidget->update();
 }
 
 /* Réglage de la taille des points */
 void MainWindow::pointSize()
 {
-    bool ok;
-    double size = QInputDialog::getDouble(this,"Enter a number","Point size :",0.,1.0,10., 2,&ok);
-    if(ok)
-        glWidget->changeSizePoint(size);
+  bool ok;
+  double size = QInputDialog::getDouble(this, "Enter a number", "Point size :", 0., 1.0, 10., 2, &ok);
+  if (ok)
+    glWidget->changeSizePoint(size);
 }
 
 /* Réglage de la taille des lignes */
 void MainWindow::lineSize()
 {
-    bool ok;
-    double size = QInputDialog::getDouble(this,"Enter a number","Line size :",0.,1.0,10., 2,&ok);
-    if(ok)
-        glWidget->changeSizeLine(size);
+  bool ok;
+  double size = QInputDialog::getDouble(this, "Enter a number", "Line size :", 0., 1.0, 10., 2, &ok);
+  if (ok)
+    glWidget->changeSizeLine(size);
 }
 
 /* Réglage de la taille des normales */
 void MainWindow::normSize()
 {
   bool ok;
-  double size = QInputDialog::getDouble(this,"Enter a number","Normal size :",1.0,0.0,10., 3,&ok);
-  if(ok)
+  double size = QInputDialog::getDouble(this, "Enter a number", "Normal size :", 1.0, 0.0, 10., 3, &ok);
+  if (ok)
     glWidget->changeSizeNormLine(size);
 }
-  
+
 /* Sélection de la couleur de fond */
 void MainWindow::selectColorBg()
 {
-    QColor color = QColorDialog::getColor(Qt::white, this);
-    if (color.isValid())
-        glWidget->changeBgColor(color);
+  QColor color = QColorDialog::getColor(Qt::white, this);
+  if (color.isValid())
+    glWidget->changeBgColor(color);
 }
 
 /* Sélection de la couleur de l'objet */
 void MainWindow::selectColorObject()
 {
-    QColor color = QColorDialog::getColor(Qt::white, this);
-    if (color.isValid())
-        glWidget->changeObColor(color);
+  QColor color = QColorDialog::getColor(Qt::white, this);
+  if (color.isValid())
+    glWidget->changeObColor(color);
 }
 
 /* Sélection de la couleur des normales */
 void MainWindow::selectColorNorm()
 {
-  QColor color = QColorDialog::getColor(QColor(255,0,0), this);
+  QColor color = QColorDialog::getColor(QColor(255, 0, 0), this);
   if (color.isValid())
     glWidget->changeNormColor(color);
 }
@@ -396,17 +406,17 @@ void MainWindow::selectColorNorm()
 /* Sélection de la couleur des lignes */
 void MainWindow::selectColorLine()
 {
-    QColor color = QColorDialog::getColor(Qt::white, this);
-    if (color.isValid())
-        glWidget->changeLineColor(color);
+  QColor color = QColorDialog::getColor(Qt::white, this);
+  if (color.isValid())
+    glWidget->changeLineColor(color);
 }
 
 /* Sélection de la couleur des points */
 void MainWindow::selectColorPoint()
 {
-    QColor color = QColorDialog::getColor(Qt::white, this);
-    if (color.isValid())
-        glWidget->changePointColor(color);
+  QColor color = QColorDialog::getColor(Qt::white, this);
+  if (color.isValid())
+    glWidget->changePointColor(color);
 }
 
 /* Affichage des informations */
@@ -414,7 +424,7 @@ void MainWindow::informations()
 {
   QString message = glWidget->displayInfos();
   QMessageBox::information(this, "Model Information", message);
-  glWidget->updateGL();
+  glWidget->update();
 }
 
 void MainWindow::triangleOrientationCW()

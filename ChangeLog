@@ -1,0 +1,15 @@
+CHANGELOG
+
+05/02/2024:
+
++ Rewrote install and uninstall scripts to facilitate the installation and reinstallation of the application, with better error handling and logging.
++ Added support for Qt6.
+Modifications include:
+- Use QOpenGLWidget instead of QGLWidget.
+- Use QOpenGLFunctions instead of GLEW.
+- Rewrite `GLWidget::display_triangle` to work with `QOpenGLFunctions`.
+- Modify `GLWidget::initializeGL` to work with `QOpenGLFunctions` and `QOpenGLBuffer`.
+- Modify `GLWidget::GLWidget` to work with `QOpenGLWidget`.
+- Modify `main` to work with `QApplication` instead of QGuiApplication.
+- Reformat the README to use markdown.
+- Add installation instructions for Debian/Ubuntu and Fedora in README.md.

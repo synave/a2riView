@@ -16,16 +16,9 @@
 #ifndef GLWIDGET_HPP
 #define GLWIDGET_HPP
 
-
-
-#ifdef __APPLE__
-#include <GLEW/glew.h>
-#else
-#include <GL/glew.h>
-#endif
-
-
-#include <QGLWidget>
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
+#include <QOpenGLBuffer>
 #include <QKeyEvent>
 #include <iostream>
 #include <QMutex>
@@ -37,29 +30,29 @@ extern "C"
 #include <a2ri/vector.h>
 }
 
-#define COUL_TRIANGLE 0.9,0.9,0.9
-#define COUL_ARETE 0.0,0.0,0.0
-#define COUL_POINT 0.0,0.0,0.0
+#define COUL_TRIANGLE 0.9, 0.9, 0.9
+#define COUL_ARETE 0.0, 0.0, 0.0
+#define COUL_POINT 0.0, 0.0, 0.0
 
 #define COUL_MAT_OBJ 0.8f, 0.8f, 0.75f
-#define COUL_LUMIERE 0.1f ,0.1f, 0.1f
-#define COUL_LUMIERE_AMBIENT  1.0f, 1.0f, 1.0f
-#define COUL_LUMIERE_DIFFUSE  1.0f, 1.0f, 1.0f
-#define COUL_LUMIERE_SPECULAR  1.0f, 1.0f, 1.0f
+#define COUL_LUMIERE 0.1f, 0.1f, 0.1f
+#define COUL_LUMIERE_AMBIENT 1.0f, 1.0f, 1.0f
+#define COUL_LUMIERE_DIFFUSE 1.0f, 1.0f, 1.0f
+#define COUL_LUMIERE_SPECULAR 1.0f, 1.0f, 1.0f
 
 #define WIDTH 800
 #define HEIGHT 600
 
-class GLWidget : public QGLWidget
+class GLWidget : public QOpenGLWidget, public QOpenGLFunctions
 {
   Q_OBJECT
-  
+
 public:
-  GLWidget(QWidget *parent = 0, const QColor& cBg=QColor(0,0,127), const QColor& cOb=QColor(Qt::white), const QColor& cLine=QColor(Qt::black), const QColor& cPoint=QColor(Qt::yellow), const QColor& cNorm=QColor(Qt::red));
+  GLWidget(QWidget *parent = 0, const QColor &cBg = QColor(0, 0, 127), const QColor &cOb = QColor(Qt::white), const QColor &cLine = QColor(Qt::black), const QColor &cPoint = QColor(Qt::yellow), const QColor &cNorm = QColor(Qt::red));
   ~GLWidget();
 
 public slots:
-  void saveScreenshot(const QString& text, int resolution);
+  void saveScreenshot(const QString &text, int resolution);
 
 public:
   QSize minimumSizeHint() const;
@@ -71,11 +64,11 @@ public:
   int yTranslation() const { return yTrans; };
   int zTranslation() const { return zTrans; };
   void polyChangeMode(GLenum polyMode);
-  int openModel(const QString& filename);
+  int openModel(const QString &filename);
   void closeModel();
   void glLight();
   void cullFace();
-  const QString& displayInfos();
+  const QString &displayInfos();
   void changeSizePoint(double size);
   void changeSizeLine(double size);
   void changeBgColor(QColor color);
@@ -99,14 +92,13 @@ protected:
   void mouseMoveEvent(QMouseEvent *event);
   void wheelEvent(QWheelEvent *event);
   void keyPressEvent(QKeyEvent *event);
-  
+
   void setScene();
   void setProjection();
   void setCamera();
   void gravity();
   void updateInfosModel();
 
-    
 private:
   void normalizeAngle(int *angle);
   void display_triangle();
@@ -126,7 +118,7 @@ private:
   QPoint lastPos;
 
   QMutex mutex;
-  
+
   vf_model model;
   QString modelName;
   double xmin, ymin, zmin;
@@ -135,17 +127,17 @@ private:
   double screenratio, modelratio;
   double modelheight, modelwidth;
   double xgravity, ygravity, zgravity;
-  
+
   double *tabVertex;
   int *tabIndex;
   double *tabVertexNormal;
   // int *tabIndexNorm;
-  
-  //tableau des coordonnées des centres de gravité des faces et de
-  //leur normal
+
+  // tableau des coordonnées des centres de gravité des faces et de
+  // leur normal
   double *tabFaceNormal;
-  //tableau de facteurs pour agrandir ou rétrécir la taille de la
-  //normale de la face
+  // tableau de facteurs pour agrandir ou rétrécir la taille de la
+  // normale de la face
   double *tabFactorNormal;
 
   GLuint buf_pos;
@@ -153,7 +145,7 @@ private:
   GLuint buf_VertexNorm;
   GLuint buf_FaceNorm;
   // GLuint buf_indexNorm;
-  
+
   QString strinfos;
   QColor colorBG;
   QColor colorOb;
@@ -161,13 +153,13 @@ private:
   QColor colorP;
   QColor colorNorm;
 
-  char* nameInfos;
-  char* nbFaceInfos;
-  char* nbVertexInfos;
-  
+  char *nameInfos;
+  char *nbFaceInfos;
+  char *nbVertexInfos;
+
   bool isDisplayFaceNormal;
 
-  //orientation des face Counter ClockWise par défaut
+  // orientation des face Counter ClockWise par défaut
   GLenum triangle_orientation;
 };
 #endif
